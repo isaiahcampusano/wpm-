@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#07110d">
+    <meta name="description" content="A focused, retro-terminal typing speed test.">
+    <title>Terminal Velocity — Typing Test</title>
+    <link rel="stylesheet" href="./styles/main.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#typingDeck">Skip to typing test</a>
+    <div class="scanlines" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="#typingDeck" aria-label="Terminal Velocity home">
+        <span class="brand__prompt" aria-hidden="true">&gt;_</span>
+        <span>TERMINAL<span class="brand__accent">VELOCITY</span></span>
+      </a>
+      <p class="system-status"><span aria-hidden="true"></span> SYSTEM READY</p>
+    </header>
+
+    <main class="shell">
+      <section class="hero" aria-labelledby="pageTitle">
+        <p class="eyebrow">// INPUT DIAGNOSTIC 01</p>
+        <h1 id="pageTitle">How fast can<br><em>you think?</em></h1>
+        <p class="hero__copy">Type the stream. Submit each word with space. Every keystroke is telemetry.</p>
+      </section>
+
+      <section class="control-bar" aria-label="Test settings">
+        <div class="control-group">
+          <label for="difficultySelect">DIFFICULTY</label>
+          <div class="select-wrap">
+            <select id="difficultySelect">
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+        </div>
+        <div class="control-group">
+          <label for="wordCountSelect">WORD COUNT</label>
+          <div class="select-wrap">
+            <select id="wordCountSelect">
+              <option value="10">10 words</option>
+              <option value="25">25 words</option>
+              <option value="50">50 words</option>
+            </select>
+          </div>
+        </div>
+        <button class="button button--ghost" id="resetButton" type="button">
+          <span aria-hidden="true">↻</span> NEW RUN
+        </button>
+      </section>
+
+      <section class="typing-deck" id="typingDeck" aria-labelledby="testHeading">
+        <div class="deck-header">
+          <div>
+            <p class="eyebrow">ACTIVE BUFFER</p>
+            <h2 id="testHeading">TYPE SEQUENCE</h2>
+          </div>
+          <p class="key-hint"><kbd>SPACE</kbd> TO COMMIT</p>
+        </div>
+
+        <div class="word-stream" id="wordStream" role="region" aria-label="Words to type" tabindex="0">
+          <div class="word-track" id="wordTrack"></div>
+        </div>
+
+        <div class="progress" aria-label="Test progress">
+          <div class="progress__fill" id="progressFill"></div>
+        </div>
+        <p class="run-status" id="runStatus" aria-live="polite">Start typing when ready.</p>
+      </section>
+
+      <section class="telemetry" aria-label="Live statistics">
+        <article class="gauge-panel">
+          <p class="eyebrow">LIVE OUTPUT</p>
+          <div class="gauge" aria-label="Current words per minute">
+            <div class="gauge__ticks" aria-hidden="true">
+              <span>0</span><span>75</span><span>150</span>
+            </div>
+            <div class="gauge__arc"></div>
+            <div class="gauge__needle" id="wpmNeedle"></div>
+            <div class="gauge__hub"></div>
+            <div class="gauge__readout"><strong id="wpmValue">0</strong><span>WPM</span></div>
+          </div>
+        </article>
+
+        <div class="stat-grid">
+          <article class="stat-card">
+            <p>ACCURACY</p>
+            <strong id="accuracyValue">100%</strong>
+            <span>VALID INPUT</span>
+          </article>
+          <article class="stat-card">
+            <p>ELAPSED</p>
+            <strong id="timeValue">0:00</strong>
+            <span>SESSION TIME</span>
+          </article>
+          <article class="stat-card stat-card--wide">
+            <p>PROTOCOL</p>
+            <strong>5 CHARS = 1 WORD</strong>
+            <span>STANDARD WPM CALCULATION</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="log" id="logSection" aria-labelledby="logHeading" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">LOCAL ARCHIVE</p>
+            <h2 id="logHeading">RUN LOG</h2>
+          </div>
+          <span>LAST 20</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">DATE</th><th scope="col">WPM</th><th scope="col">ACCURACY</th><th scope="col">MODE</th></tr></thead>
+            <tbody id="logBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer><span>LOCAL PROCESS // NO DATA TRANSMITTED</span><span>BUILD 1.0.0</span></footer>
+
+    <dialog class="result-modal" id="resultModal" aria-labelledby="resultTitle">
+      <div class="modal__terminal-bar"><span></span><span></span><span></span><code>run_complete.log</code></div>
+      <div class="modal__body">
+        <p class="eyebrow">SEQUENCE COMPLETE</p>
+        <h2 id="resultTitle">Run telemetry</h2>
+        <dl class="modal__stats" id="resultStats"></dl>
+        <button class="button button--primary" id="resultRestartButton" type="button">RUN AGAIN <span aria-hidden="true">↵</span></button>
+        <p class="modal__hint">Press Enter to restart</p>
+      </div>
+    </dialog>
+
+    <script type="module" src="./scripts/main.js"></script>
+  </body>
+</html>
