@@ -1,5 +1,7 @@
 # Terminal Velocity
 
+https://isaiahcampusano.github.io/wpm-/
+
 A polished, dependency-free typing speed test with a retro terminal interface.
 
 ## Run locally
