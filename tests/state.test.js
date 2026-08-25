@@ -23,12 +23,19 @@ test.beforeEach(() => {
   resetRunState();
 });
 
-test('settings validation accepts only supported values', () => {
-  assert.deepEqual(validateSettings({ difficulty: 'hard', wordCount: '50' }), { difficulty: 'hard', wordCount: 50 });
-  assert.deepEqual(validateSettings({ difficulty: '<script>', wordCount: 99 }), DEFAULT_SETTINGS);
+test('settings validation accepts only supported new values', () => {
+  assert.deepEqual(validateSettings({ difficulty: 'hard', lengthBand: 'long' }), { difficulty: 'hard', lengthBand: 'long' });
+  assert.deepEqual(validateSettings({ difficulty: '<script>', lengthBand: 'huge' }), DEFAULT_SETTINGS);
 });
 
-test('loadState sanitizes stored settings and history', () => {
+test('legacy numeric word counts migrate to valid passage length bands', () => {
+  assert.deepEqual(validateSettings({ difficulty: 'easy', wordCount: 10 }), { difficulty: 'easy', lengthBand: 'short' });
+  assert.deepEqual(validateSettings({ difficulty: 'easy', wordCount: '25' }), { difficulty: 'easy', lengthBand: 'medium' });
+  assert.deepEqual(validateSettings({ difficulty: 'hard', wordCount: 50 }), { difficulty: 'hard', lengthBand: 'long' });
+  assert.deepEqual(validateSettings({ difficulty: 'hard', wordCount: 99 }), { difficulty: 'hard', lengthBand: 'medium' });
+});
+
+test('loadState migrates old settings while preserving valid history', () => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({
     settings: { difficulty: 'easy', wordCount: 25 },
     history: [
@@ -37,7 +44,7 @@ test('loadState sanitizes stored settings and history', () => {
     ]
   }));
   assert.equal(loadState(), true);
-  assert.deepEqual(state.settings, { difficulty: 'easy', wordCount: 25 });
+  assert.deepEqual(state.settings, { difficulty: 'easy', lengthBand: 'medium' });
   assert.equal(state.history.length, 1);
   assert.equal(state.history[0].wpm, 72);
 });

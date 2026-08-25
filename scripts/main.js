@@ -2,21 +2,21 @@ import { handleKeyDown, initGame, resetTest } from './game.js';
 import { loadState, state, updateSettings } from './state.js';
 
 const difficultySelect = document.getElementById('difficultySelect');
-const wordCountSelect = document.getElementById('wordCountSelect');
+const passageLengthSelect = document.getElementById('passageLengthSelect');
 const resetButton = document.getElementById('resetButton');
 const resultRestartButton = document.getElementById('resultRestartButton');
 const resultModal = document.getElementById('resultModal');
-const wordStream = document.getElementById('wordStream');
+const passageStream = document.getElementById('passageStream');
 
 function syncControls() {
   difficultySelect.value = state.settings.difficulty;
-  wordCountSelect.value = String(state.settings.wordCount);
+  passageLengthSelect.value = state.settings.lengthBand;
 }
 
 function handleSettingsChange() {
   updateSettings({
     difficulty: difficultySelect.value,
-    wordCount: Number(wordCountSelect.value)
+    lengthBand: passageLengthSelect.value
   });
   syncControls();
   resetTest();
@@ -28,8 +28,8 @@ initGame();
 
 window.addEventListener('keydown', handleKeyDown);
 difficultySelect.addEventListener('change', handleSettingsChange);
-wordCountSelect.addEventListener('change', handleSettingsChange);
+passageLengthSelect.addEventListener('change', handleSettingsChange);
 resetButton.addEventListener('click', () => resetTest());
 resultRestartButton.addEventListener('click', () => resetTest());
-wordStream.addEventListener('click', () => wordStream.focus({ preventScroll: true }));
+passageStream.addEventListener('click', () => passageStream.focus({ preventScroll: true }));
 resultModal.addEventListener('cancel', (event) => event.preventDefault());

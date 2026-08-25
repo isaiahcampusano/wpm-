@@ -1,20 +1,15 @@
+import { createPassageRunState } from './passageRun.js';
+
 const STORAGE_KEY = 'terminalVelocityData';
 export const DIFFICULTIES = Object.freeze(['easy', 'medium', 'hard']);
-export const WORD_COUNTS = Object.freeze([10, 25, 50]);
-export const DEFAULT_SETTINGS = Object.freeze({ difficulty: 'medium', wordCount: 10 });
+export const LENGTH_BANDS = Object.freeze(['short', 'medium', 'long']);
+export const DEFAULT_SETTINGS = Object.freeze({ difficulty: 'medium', lengthBand: 'medium' });
 
 export const state = {
-  wordList: [],
-  currentWordIndex: 0,
-  currentCharIndex: 0,
-  typedChars: [],
-  totalKeystrokes: 0,
-  correctKeystrokes: 0,
-  startTime: null,
-  endTime: null,
+  ...createPassageRunState(),
   isActive: false,
-  isFinished: false,
   peakWpm: 0,
+  previousPassageId: null,
   settings: { ...DEFAULT_SETTINGS },
   history: []
 };
@@ -23,11 +18,18 @@ export function validateSettings(candidate = {}) {
   const difficulty = DIFFICULTIES.includes(candidate.difficulty)
     ? candidate.difficulty
     : DEFAULT_SETTINGS.difficulty;
-  const numericCount = Number(candidate.wordCount);
-  const wordCount = WORD_COUNTS.includes(numericCount)
-    ? numericCount
-    : DEFAULT_SETTINGS.wordCount;
-  return { difficulty, wordCount };
+
+  let lengthBand = LENGTH_BANDS.includes(candidate.lengthBand)
+    ? candidate.lengthBand
+    : null;
+
+  if (!lengthBand && candidate.wordCount !== undefined) {
+    // Migrate the three settings used by the word-list version. Unknown legacy
+    // values reset to Medium rather than risking an invalid saved selection.
+    lengthBand = ({ 10: 'short', 25: 'medium', 50: 'long' })[Number(candidate.wordCount)] ?? null;
+  }
+
+  return { difficulty, lengthBand: lengthBand ?? DEFAULT_SETTINGS.lengthBand };
 }
 
 function sanitizeHistory(candidate) {
@@ -88,25 +90,15 @@ export function loadState(storage = globalThis.localStorage) {
   }
 }
 
-export function resetRunState() {
-  Object.assign(state, {
-    wordList: [],
-    currentWordIndex: 0,
-    currentCharIndex: 0,
-    typedChars: [],
-    totalKeystrokes: 0,
-    correctKeystrokes: 0,
-    startTime: null,
-    endTime: null,
+export function resetRunState(passage = null) {
+  Object.assign(state, createPassageRunState(passage), {
     isActive: false,
-    isFinished: false,
     peakWpm: 0
   });
 }
 
 export function pushHistory(entry) {
-  const nextHistory = sanitizeHistory([entry, ...state.history]);
-  state.history = nextHistory;
+  state.history = sanitizeHistory([entry, ...state.history]);
   saveState();
 }
 

@@ -24,7 +24,7 @@
       <section class="hero" aria-labelledby="pageTitle">
         <p class="eyebrow">// INPUT DIAGNOSTIC 01</p>
         <h1 id="pageTitle">How fast can<br><em>you think?</em></h1>
-        <p class="hero__copy">Type the stream. Submit each word with space. Every keystroke is telemetry.</p>
+        <p class="hero__copy">Type the passage continuously. Every letter, space, and mark is telemetry.</p>
       </section>
 
       <section class="control-bar" aria-label="Test settings">
@@ -39,12 +39,12 @@
           </div>
         </div>
         <div class="control-group">
-          <label for="wordCountSelect">WORD COUNT</label>
+          <label for="passageLengthSelect">PASSAGE LENGTH</label>
           <div class="select-wrap">
-            <select id="wordCountSelect">
-              <option value="10">10 words</option>
-              <option value="25">25 words</option>
-              <option value="50">50 words</option>
+            <select id="passageLengthSelect">
+              <option value="short">Short</option>
+              <option value="medium">Medium</option>
+              <option value="long">Long</option>
             </select>
           </div>
         </div>
@@ -59,12 +59,13 @@
             <p class="eyebrow">ACTIVE BUFFER</p>
             <h2 id="testHeading">TYPE SEQUENCE</h2>
           </div>
-          <p class="key-hint"><kbd>SPACE</kbd> TO COMMIT</p>
+          <p class="key-hint"><kbd>BACKSPACE</kbd> CLEARS ERRORS</p>
         </div>
 
-        <div class="word-stream" id="wordStream" role="region" aria-label="Words to type" tabindex="0">
-          <div class="word-track" id="wordTrack"></div>
+        <div class="passage-stream" id="passageStream" role="region" aria-label="Passage to type" tabindex="0">
+          <p class="passage-track" id="passageTrack"></p>
         </div>
+        <p class="passage-attribution" id="passageAttribution"></p>
 
         <div class="progress" aria-label="Test progress">
           <div class="progress__fill" id="progressFill"></div>
