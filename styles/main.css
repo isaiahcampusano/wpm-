@@ -392,6 +392,10 @@ footer {
 .modal__stat dt { color: var(--muted); font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; }
 .modal__stat dd { margin: .5rem 0 0; color: var(--green); font: 700 1.8rem var(--display); }
 .modal__hint { margin: .8rem 0 0; color: var(--muted); text-align: center; font-size: .62rem; }
+.modal__insights { margin: 0 0 1.25rem; padding: 1rem; border: 1px solid var(--line); }
+.modal__insights h3 { margin: 0 0 .75rem; color: var(--green-dim); font-size: .68rem; letter-spacing: .12em; }
+.modal__insights ul { display: grid; gap: .7rem; margin: 0; padding-left: 1.2rem; color: #a8bdb1; font-size: .7rem; line-height: 1.5; white-space: pre-line; }
+.modal__body > .button { margin-top: .65rem; }
 
 [hidden] { display: none !important; }
 

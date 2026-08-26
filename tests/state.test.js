@@ -4,6 +4,7 @@ import {
   DEFAULT_SETTINGS,
   STORAGE_KEY,
   loadState,
+  getRunsChronological,
   pushHistory,
   resetRunState,
   state,
@@ -47,6 +48,14 @@ test('loadState migrates old settings while preserving valid history', () => {
   assert.deepEqual(state.settings, { difficulty: 'easy', lengthBand: 'medium' });
   assert.equal(state.history.length, 1);
   assert.equal(state.history[0].wpm, 72);
+  assert.deepEqual(state.history[0].mistakes, []);
+  assert.equal(state.history[0].isTargetedRetry, false);
+});
+
+test('chronological history is oldest-first without mutating storage order', () => {
+  const newestFirst = [{ id: 'new' }, { id: 'old' }];
+  assert.deepEqual(getRunsChronological(newestFirst).map(({ id }) => id), ['old', 'new']);
+  assert.deepEqual(newestFirst.map(({ id }) => id), ['new', 'old']);
 });
 
 test('malformed storage resets to safe defaults', () => {

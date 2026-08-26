@@ -1,4 +1,5 @@
 import { calcAccuracy, calcWPM, formatDate, formatTime } from './stats.js';
+import { getRunsChronological } from './state.js';
 
 const GAUGE_MAX = 150;
 const GAUGE_REDLINE = 120;
@@ -16,7 +17,9 @@ const el = {
   resultModal: document.getElementById('resultModal'),
   resultStats: document.getElementById('resultStats'),
   logBody: document.getElementById('logBody'),
-  logSection: document.getElementById('logSection')
+  logSection: document.getElementById('logSection'),
+  resultInsights: document.getElementById('resultInsights'),
+  practiceMistakesButton: document.getElementById('practiceMistakesButton')
 };
 
 export function buildPassage(passage) {
@@ -98,13 +101,29 @@ function addResult(label, value) {
   return wrapper;
 }
 
-export function showResultModal({ finalWpm, peakWpm, accuracy, timeTakenMs }) {
+export function formatInsight(insight) {
+  if (insight.type === 'word') return `“${insight.word}” caused errors in ${insight.affectedRuns} recent runs.`;
+  const lines = [`You missed “${insight.char}” in ${insight.affectedRuns} recent runs.`];
+  if (insight.topSubstitution) lines.push(`Most common substitution: “${insight.topSubstitution.actual}” → “${insight.char}”`);
+  if (insight.techniqueHint) lines.push(`Technique: ${insight.techniqueHint}`);
+  return lines.join('\n');
+}
+
+export function showResultModal({ finalWpm, peakWpm, accuracy, timeTakenMs, insights = [], canOfferRetry = false }) {
   el.resultStats.replaceChildren(
     addResult('Final WPM', String(finalWpm)),
     addResult('Peak WPM', String(peakWpm)),
     addResult('Accuracy', `${accuracy}%`),
     addResult('Time', formatTime(timeTakenMs))
   );
+  el.resultInsights.replaceChildren(...(insights.length > 0
+    ? insights.map((insight) => {
+      const item = document.createElement('li');
+      item.textContent = formatInsight(insight);
+      return item;
+    })
+    : [Object.assign(document.createElement('li'), { textContent: 'Complete more runs to identify recurring patterns.' })]));
+  el.practiceMistakesButton.hidden = !canOfferRetry;
   if (!el.resultModal.open) el.resultModal.showModal();
 }
 
@@ -114,9 +133,9 @@ export function hideResultModal() {
 
 export function renderLog(history) {
   el.logSection.hidden = history.length === 0;
-  const rows = history.map((entry) => {
+  const rows = getRunsChronological(history).map((entry) => {
     const row = document.createElement('tr');
-    [formatDate(entry.date), String(entry.wpm), `${entry.accuracy}%`, entry.difficulty.toUpperCase()]
+    [formatDate(entry.completedAt), String(entry.wpm), `${entry.accuracy}%`, entry.difficulty.toUpperCase(), String(entry.mistakes.length)]
       .forEach((value) => {
         const cell = document.createElement('td');
         cell.textContent = value;

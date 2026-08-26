@@ -3,8 +3,10 @@ import { PASSAGES, selectPassage } from './passages.js';
 import { backspace, typeCharacter } from './passageRun.js';
 import { calcAccuracy, calcWPM } from './stats.js';
 import * as ui from './ui.js';
+import { buildInsights, buildTargetedRetry } from './mistakeAnalysis.js';
 
 let statsTimer = null;
+let currentRunIsTargetedRetry = false;
 
 function stopStatsTimer() {
   if (statsTimer !== null) {
@@ -26,6 +28,11 @@ export function resetTest(shouldFocus = true) {
     state.settings.lengthBand,
     previousPassageId
   );
+  currentRunIsTargetedRetry = false;
+  startPassage(passage, shouldFocus);
+}
+
+function startPassage(passage, shouldFocus = true) {
   resetRunState(passage);
   state.previousPassageId = passage.id;
   ui.hideResultModal();
@@ -34,6 +41,14 @@ export function resetTest(shouldFocus = true) {
   ui.resetGaugeAndStats();
   ui.renderLog(state.history);
   if (shouldFocus) ui.focusTypingArea();
+}
+
+export function startTargetedRetry() {
+  const text = buildTargetedRetry(state.history);
+  if (!text) return false;
+  currentRunIsTargetedRetry = true;
+  startPassage({ id: `targeted-${Date.now()}`, text, title: 'Targeted Retry', author: 'Local mistake patterns' });
+  return true;
 }
 
 function startStatsTimer() {
@@ -92,17 +107,24 @@ function finishTest() {
   const timeTakenMs = Math.max(0, state.finishedAt - state.startedAt);
   const peakWpm = Math.max(state.peakWpm, finalWpm);
 
+  const completedAt = new Date().toISOString();
   pushHistory({
+    id: `run-${Date.now()}`,
     wpm: finalWpm,
     accuracy,
     difficulty: state.settings.difficulty,
-    date: new Date().toISOString()
+    lengthBand: state.settings.lengthBand,
+    completedAt,
+    isTargetedRetry: currentRunIsTargetedRetry,
+    mistakes: state.mistakes
   });
+
+  const insights = currentRunIsTargetedRetry ? [] : buildInsights(state.history);
 
   ui.updateStats(state, state.finishedAt);
   ui.setStatus('Passage complete. Telemetry archived.', 'complete');
   ui.renderLog(state.history);
-  ui.showResultModal({ finalWpm, peakWpm, accuracy, timeTakenMs });
+  ui.showResultModal({ finalWpm, peakWpm, accuracy, timeTakenMs, insights, canOfferRetry: !currentRunIsTargetedRetry && insights.length > 0 });
 }
 
 export function handleKeyDown(event) {

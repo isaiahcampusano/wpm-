@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { backspace, createPassageRunState, typeCharacter } from '../scripts/passageRun.js';
+import { backspace, createPassageRunState, getContainingWord, typeCharacter } from '../scripts/passageRun.js';
 import { calcAccuracy, calcWPM } from '../scripts/stats.js';
 
 const passage = Object.freeze({ text: 'A, b.' });
@@ -25,8 +25,14 @@ test('an incorrect character starts the timer, counts, and locks progress', () =
 
   typeCharacter(run, 'y', 2_100);
   assert.equal(run.currentIndex, 0);
-  assert.equal(run.totalKeystrokes, 2);
-  assert.equal(run.errorChar, 'y');
+  assert.equal(run.totalKeystrokes, 1);
+  assert.equal(run.errorChar, 'x');
+  assert.deepEqual(run.mistakes, [{ expected: 'A', actual: 'x', word: 'A,', characterIndex: 0 }]);
+});
+
+test('word extraction uses whitespace boundaries at passage edges', () => {
+  assert.equal(getContainingWord('array[index] then', 0), 'array[index]');
+  assert.equal(getContainingWord('first don\'t', 10), "don't");
 });
 
 test('Backspace clears only a current error and allows retry at the same index', () => {

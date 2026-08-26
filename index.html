@@ -116,7 +116,7 @@
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th scope="col">DATE</th><th scope="col">WPM</th><th scope="col">ACCURACY</th><th scope="col">MODE</th></tr></thead>
+            <thead><tr><th scope="col">DATE</th><th scope="col">WPM</th><th scope="col">ACCURACY</th><th scope="col">MODE</th><th scope="col">ERRORS</th></tr></thead>
             <tbody id="logBody"></tbody>
           </table>
         </div>
@@ -131,6 +131,11 @@
         <p class="eyebrow">SEQUENCE COMPLETE</p>
         <h2 id="resultTitle">Run telemetry</h2>
         <dl class="modal__stats" id="resultStats"></dl>
+        <section class="modal__insights" aria-labelledby="insightsTitle">
+          <h3 id="insightsTitle">MISTAKE PATTERNS</h3>
+          <ul id="resultInsights"></ul>
+        </section>
+        <button class="button button--ghost" id="practiceMistakesButton" type="button" hidden>PRACTICE MISTAKES</button>
         <button class="button button--primary" id="resultRestartButton" type="button">RUN AGAIN <span aria-hidden="true">↵</span></button>
         <p class="modal__hint">Press Enter to restart</p>
       </div>

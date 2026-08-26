@@ -43,15 +43,30 @@ function sanitizeHistory(candidate) {
         && entry.accuracy >= 0
         && entry.accuracy <= 100
         && DIFFICULTIES.includes(entry.difficulty)
-        && !Number.isNaN(new Date(entry.date).getTime());
+        && !Number.isNaN(new Date(entry.completedAt ?? entry.date).getTime());
     })
     .slice(0, 20)
     .map((entry) => ({
       wpm: Math.round(entry.wpm),
       accuracy: Math.round(entry.accuracy),
       difficulty: entry.difficulty,
-      date: new Date(entry.date).toISOString()
+      lengthBand: LENGTH_BANDS.includes(entry.lengthBand) ? entry.lengthBand : DEFAULT_SETTINGS.lengthBand,
+      completedAt: new Date(entry.completedAt ?? entry.date).toISOString(),
+      id: typeof entry.id === 'string' ? entry.id : `run-${new Date(entry.completedAt ?? entry.date).getTime()}`,
+      isTargetedRetry: entry.isTargetedRetry === true,
+      mistakes: Array.isArray(entry.mistakes)
+        ? entry.mistakes.filter((mistake) => mistake
+          && typeof mistake.expected === 'string'
+          && typeof mistake.actual === 'string'
+          && typeof mistake.word === 'string'
+          && Number.isInteger(mistake.characterIndex))
+          .map(({ expected, actual, word, characterIndex }) => ({ expected, actual, word, characterIndex }))
+        : []
     }));
+}
+
+export function getRunsChronological(history = state.history) {
+  return [...history].reverse();
 }
 
 export function updateSettings(patch) {

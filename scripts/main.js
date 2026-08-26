@@ -1,4 +1,4 @@
-import { handleKeyDown, initGame, resetTest } from './game.js';
+import { handleKeyDown, initGame, resetTest, startTargetedRetry } from './game.js';
 import { loadState, state, updateSettings } from './state.js';
 
 const difficultySelect = document.getElementById('difficultySelect');
@@ -7,6 +7,7 @@ const resetButton = document.getElementById('resetButton');
 const resultRestartButton = document.getElementById('resultRestartButton');
 const resultModal = document.getElementById('resultModal');
 const passageStream = document.getElementById('passageStream');
+const practiceMistakesButton = document.getElementById('practiceMistakesButton');
 
 function syncControls() {
   difficultySelect.value = state.settings.difficulty;
@@ -31,5 +32,6 @@ difficultySelect.addEventListener('change', handleSettingsChange);
 passageLengthSelect.addEventListener('change', handleSettingsChange);
 resetButton.addEventListener('click', () => resetTest());
 resultRestartButton.addEventListener('click', () => resetTest());
+practiceMistakesButton.addEventListener('click', () => startTargetedRetry());
 passageStream.addEventListener('click', () => passageStream.focus({ preventScroll: true }));
 resultModal.addEventListener('cancel', (event) => event.preventDefault());
